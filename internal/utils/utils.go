@@ -11,7 +11,7 @@ import (
 
 type Envelope map[string]interface{}
 
-func WtiteJSON(w http.ResponseWriter, status int, data Envelope) error {
+func WriteJSON(w http.ResponseWriter, status int, data Envelope) error {
 	js, err := json.MarshalIndent(data, "", " ")
 	if err != nil {
 		return err
@@ -38,4 +38,13 @@ func ReadIDParam(r *http.Request) (int64, error) {
 	}
 
 	return id, nil
+}
+
+func ReadUsernameParam(r *http.Request) (string, error) {
+	paramsUserUsername := chi.URLParam(r, "username")
+	if paramsUserUsername == "" {
+		return "", errors.New("invalid param \"username\"")
+	}
+
+	return paramsUserUsername, nil
 }

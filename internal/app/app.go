@@ -15,6 +15,8 @@ import (
 type Application struct {
 	Logger         *log.Logger
 	WorkoutHandler *api.WorkoutHandler
+	UserHandler    *api.UserHandler
+	TokenHandler   *api.TokenHandler
 	DB             *sql.DB
 }
 
@@ -33,10 +35,14 @@ func NewApplication() (*Application, error) {
 
 	// Our stores will go here
 	workoutStore := store.NewPostgresWorkoutStore(pgDB)
+	userStore := store.NewPostgresUserStore(pgDB)
+	tokenStore := store.NewPostgresTokenStore(pgDB)
 
 	app := &Application{
 		Logger:         logger,
 		WorkoutHandler: api.NewWorkoutHandler(workoutStore, logger),
+		UserHandler:    api.NewUserHandler(userStore, logger),
+		TokenHandler:   api.NewTokenHandler(tokenStore, userStore, logger),
 		DB:             pgDB,
 	}
 

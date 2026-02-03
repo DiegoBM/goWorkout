@@ -28,8 +28,8 @@ type PostgresWorkoutStore struct {
 	db *sql.DB
 }
 
-func (pws *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error) {
-	tx, err := pws.db.Begin()
+func (s *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error) {
+	tx, err := s.db.Begin()
 	if err != nil {
 		return nil, err
 	}
@@ -65,11 +65,11 @@ func (pws *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, erro
 	return workout, nil
 }
 
-func (pws *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
+func (s *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
 	workout := &Workout{}
 
 	query := "SELECT id, title, description, duration_minutes, calories_burned FROM workouts WHERE id = $1"
-	err := pws.db.QueryRow(query, id).Scan(&workout.ID, &workout.Title, &workout.Description, &workout.DurationMinutes, &workout.CaloriesBurned)
+	err := s.db.QueryRow(query, id).Scan(&workout.ID, &workout.Title, &workout.Description, &workout.DurationMinutes, &workout.CaloriesBurned)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -80,7 +80,7 @@ func (pws *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
 	}
 
 	entryQuery := "SELECT id, exercise_name, sets, reps, duration_seconds, weight, notes, order_index FROM workout_entries WHERE workout_id = $1 ORDER BY order_index"
-	rows, err := pws.db.Query(entryQuery, id)
+	rows, err := s.db.Query(entryQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +99,8 @@ func (pws *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
 	return workout, nil
 }
 
-func (pws *PostgresWorkoutStore) UpdateWorkout(workout *Workout) error {
-	tx, err := pws.db.Begin()
+func (s *PostgresWorkoutStore) UpdateWorkout(workout *Workout) error {
+	tx, err := s.db.Begin()
 	if err != nil {
 		return err
 	}
@@ -144,8 +144,8 @@ func (pws *PostgresWorkoutStore) UpdateWorkout(workout *Workout) error {
 	return tx.Commit()
 }
 
-func (pws *PostgresWorkoutStore) DeleteWorkout(id int64) error {
-	res, err := pws.db.Exec("DELETE FROM workouts WHERE id = $1", id)
+func (s *PostgresWorkoutStore) DeleteWorkout(id int64) error {
+	res, err := s.db.Exec("DELETE FROM workouts WHERE id = $1", id)
 	if err != nil {
 		return err
 	}
