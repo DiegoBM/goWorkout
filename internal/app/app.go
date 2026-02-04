@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/DiegoBM/goWorkout/internal/api"
+	"github.com/DiegoBM/goWorkout/internal/middleware"
 	"github.com/DiegoBM/goWorkout/internal/store"
 	"github.com/DiegoBM/goWorkout/migrations"
 )
@@ -17,6 +18,7 @@ type Application struct {
 	WorkoutHandler *api.WorkoutHandler
 	UserHandler    *api.UserHandler
 	TokenHandler   *api.TokenHandler
+	Middleware     middleware.UserMiddleware
 	DB             *sql.DB
 }
 
@@ -43,6 +45,7 @@ func NewApplication() (*Application, error) {
 		WorkoutHandler: api.NewWorkoutHandler(workoutStore, logger),
 		UserHandler:    api.NewUserHandler(userStore, logger),
 		TokenHandler:   api.NewTokenHandler(tokenStore, userStore, logger),
+		Middleware:     middleware.UserMiddleware{UserStore: userStore},
 		DB:             pgDB,
 	}
 
